@@ -15,7 +15,7 @@ public class Client {
     private String phoneNumber;
     private Date birthDate;
 
-    private Boolean isOfLegalAge(Date birthDate) {
+    private static boolean isOfLegalAge(Date birthDate) {
         Calendar todaysDate = Calendar.getInstance();
         Calendar birthDateCal = Calendar.getInstance();
         birthDateCal.setTime(birthDate);
@@ -30,7 +30,7 @@ public class Client {
 
     public Client(String fullName, String email, String nationality, String phoneNumber, Date birthDate) {
         if (!isOfLegalAge(birthDate)) {
-            throw new IllegalArgumentException("The client must be of leagl age");
+            throw new IllegalArgumentException("The client must be of legal age");
         }
 
         this.fullName = fullName;
