@@ -40,4 +40,31 @@ public class Booking {
         this.totalPay = dayTrip.getTotalPrice(adults, kids);
         this.status = "Activa";
     }
+
+    @Override
+    public String toString() {
+        if (accommodation != null) {
+            return "Reserva{" +
+                    "Cliente=" + client.getFullName() +
+                    ", accommodation=" + accommodation.getName() +
+                    ", room=" + room.getType() + " " + room.getDescription() +
+                    ", startDate=" + startDate +
+                    ", endDate=" + endDate +
+                    ", adults=" + adults +
+                    ", kids=" + kids +
+                    ", totalPay=" + totalPay +
+                    ", status='" + status + '\'' +
+                    '}';
+        } else {
+            return "Booking{" +
+                    "client=" + client.getFullName() +
+                    ", dayTrip=" + dayTrip.getName() +
+                    ", startDate=" + startDate +
+                    ", adults=" + adults +
+                    ", kids=" + kids +
+                    ", totalPay=" + totalPay +
+                    ", status='" + status + '\'' +
+                    '}';
+        }
+    }
 }
