@@ -66,7 +66,7 @@ public class Room {
                 totalPercentage += increaseLast5Days;
                 appliedIncreaseLast5Days = true;
             }
-            else if (dayOfMonth >= 10 && dayOfMonth <= 15 && !appliedIncreaseDays10to15) {
+            else if (dayOfMonth > 10 && dayOfMonth <= 15 && !appliedIncreaseDays10to15) {
                 totalPercentage += increaseDays10to15;
                 appliedIncreaseDays10to15 = true;
             }
@@ -74,9 +74,30 @@ public class Room {
                 totalPercentage += discountDays5to10;
                 appliedDiscountDays5to10 = true;
             }
+
             currentDate.add(Calendar.DAY_OF_MONTH, 1);
         }
-        double finalPrice = (subtotal * (totalPercentage + 100))/100;
-        return finalPrice;
+
+        if (totalPercentage > 0) {
+            System.out.println("Debido a la fecha, el precio total ha aumentado un " + totalPercentage + "% = $" + ((subtotal*totalPercentage)/100));
+        }
+        if (totalPercentage < 0) {
+            System.out.println("Debido a la fecha de la estadía, ha recibido un descuento del " + (-totalPercentage) + "% = $" + (-(subtotal*totalPercentage)/100));
+        }
+
+        System.out.println("Subtotal -> " + subtotal);
+        System.out.println("TOTAL -> " + (subtotal * (totalPercentage + 100))/100);
+
+        return (subtotal * (totalPercentage + 100))/100;
+    }
+
+    @Override
+    public String toString() {
+        return "Habitación{" +
+                "No.=" + id +
+                ", Tipo='" + type + '\'' +
+                ", Descripción='" + description + '\'' +
+                ", Precio/Noche=" + pricePerNight +
+                '}';
     }
 }
