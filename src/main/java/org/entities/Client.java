@@ -1,19 +1,24 @@
 package org.entities;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Client {
     private String fullName;
     private String email;
     private String nationality;
     private String phoneNumber;
     private Date birthDate;
+    private List<Booking> bookings;
 
     private static boolean isOfLegalAge(Date birthDate) {
         Calendar todaysDate = Calendar.getInstance();
@@ -38,5 +43,21 @@ public class Client {
         this.nationality = nationality;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
+        this.bookings = new ArrayList<>();
+    }
+
+    public void addBooking(Booking booking) {
+        this.bookings.add(booking);
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "Nombre Completo='" + fullName + '\'' +
+                ", Email='" + email + '\'' +
+                ", Nacionalidad='" + nationality + '\'' +
+                ", Número telefónico='" + phoneNumber + '\'' +
+                ", Fecha de Nacimiento=" + birthDate +
+                '}';
     }
 }
