@@ -45,16 +45,55 @@ public class DayTrip {
 
         int dayOfMonth = calendarDate.get(Calendar.DAY_OF_MONTH);
 
+        Boolean haAumentado = false;
+        Boolean haDisminuido = false;
+
         if (dayOfMonth >= 26) {
             totalPercentage = increaseLast5Days;
+            haAumentado = true;
         }
-        else if (dayOfMonth >= 10 && dayOfMonth <= 15) {
+        else if (dayOfMonth > 10 && dayOfMonth <= 15) {
             totalPercentage = increaseDays10to15;
+            haAumentado = true;
         }
         else if (dayOfMonth >= 5 && dayOfMonth <= 10) {
             totalPercentage = discountDays5to10;
+            haDisminuido = true;
         }
 
-        return (((adults * pricePerAdult) + (kids * pricePerKid)) * (totalPercentage + 100))/100;
+        double subtotal = (adults * pricePerAdult) + (kids * pricePerKid);
+
+        if (haAumentado) {
+            System.out.println("Debido a la fecha, el precio total ha aumentado un " + totalPercentage + "% = $" + ((subtotal*totalPercentage)/100));
+        }
+        if (haDisminuido) {
+            System.out.println("Debido a la fecha de la estadía, ha recibido un descuento del " + (-totalPercentage) + "% = $" + (-(subtotal*totalPercentage)/100));
+        }
+
+        System.out.println("Subtotal -> " + subtotal);
+        System.out.println("TOTAL -> " + (subtotal * (totalPercentage + 100))/100);
+
+        return (subtotal * (totalPercentage + 100))/100;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Día de Sol [ID: ").append(id)
+                .append(", Nombre: ").append(name)
+                .append(", Calificación: ").append(rating)
+                .append("]\nActividades:\n");
+        for (Amenity amenity : amenities) {
+            sb.append("- Nombre: ").append(amenity.getName())
+                    .append("\n");
+        }
+        sb.append("Reservas:\n");
+        for (Booking booking : bookings) {
+            sb.append("- Reserva para: ").append(booking.getClient().getFullName())
+                    .append(", Fecha: ").append(booking.getStartDate())
+                    .append(", Pago total: $").append(booking.getTotalPay())
+                    .append("\n");
+        }
+        return sb.toString();
     }
 }
