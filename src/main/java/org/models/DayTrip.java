@@ -16,8 +16,9 @@ public class DayTrip {
     private Double pricePerKid;
     private List<Booking> bookings;
     private List<String> amenities;
+    private String city;
 
-    public DayTrip(String name, Double rating, Double pricePerAdult, Double pricePerKid, List<String> amenities) {
+    public DayTrip(String name, Double rating, Double pricePerAdult, Double pricePerKid, List<String> amenities, String city) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.rating = rating;
@@ -25,14 +26,11 @@ public class DayTrip {
         this.pricePerKid = pricePerKid;
         this.bookings = new ArrayList<>();
         this.amenities = amenities;
+        this.city = city;
     }
 
     public void addBooking(Booking booking) {
         this.bookings.add(booking);
-    }
-
-    public void addAmenity(String amenity) {
-        this.amenities.add(amenity);
     }
 
     public Double getTotalPrice(Integer adults, Integer kids, LocalDate date) {
@@ -110,6 +108,7 @@ public class DayTrip {
                 .append(" Calificación: ").append(rating)
                 .append(", Precio/Adulto: ").append(pricePerAdult)
                 .append(", Precio/Menor de edad: ").append(pricePerKid)
+                .append(", Ciudad: ").append(city)
                 .append("]\nActividades:\n");
         for (String amenity : amenities) {
             sb.append("- ").append(amenity)
