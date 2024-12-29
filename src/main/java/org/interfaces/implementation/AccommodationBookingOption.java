@@ -6,11 +6,13 @@ import org.models.Booking;
 import org.models.Client;
 import org.models.Room;
 import org.interfaces.IMenu;
+import org.repository.CityRepository;
 
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 
 @AllArgsConstructor
 public class AccommodationBookingOption implements IMenu {
@@ -25,36 +27,27 @@ public class AccommodationBookingOption implements IMenu {
         handleAccommodationBooking(scanner, clients, accommodations, bookings);
     }
 
-    private static void handleAccommodationBooking(Scanner scanner, List<Client> clientsList,
-                                                   List<Accommodation> accommodationList, List<Booking> bookings) {
-        LocalDate checkIn = getCheckInDate(scanner);
-        LocalDate checkOut = getCheckOutDate(scanner, checkIn);
+    private static void handleAccommodationBooking(Scanner scanner, List<Client> clients, List<Accommodation> accommodations, List<Booking> bookings) {
+
         String citySelected = getCity(scanner);
 
-        List<Accommodation> accommodationsByCity = filterAccommodationsByCity(accommodationList, citySelected);
-        if (accommodationsByCity.isEmpty()) {
-            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
-            return;
-        }
-
+        List<Accommodation> accommodationsByCity = filterAccommodationsByCity(accommodations, citySelected);
+        if (accommodationNotFoundByCity(accommodationsByCity, citySelected)) return;
         showAccommodationsByCity(citySelected, accommodationsByCity);
+
+        LocalDate checkIn = getCheckInDate(scanner);
+        LocalDate checkOut = getCheckOutDate(scanner, checkIn);
 
         String accommodationType = getAccommodationType(scanner);
 
-        List<Accommodation> matchedAccommodations = filterAccommodationsByCityAndType(accommodationList, citySelected, accommodationType);
-        if (matchedAccommodations.isEmpty()) {
-            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad y tipo seleccionados.");
-            return;
-        }
+        List<Accommodation> matchedAccommodations = filterAccommodationsByCityAndType(accommodations, citySelected, accommodationType);
+        if (accommodationsNotFound(matchedAccommodations)) return;
 
         Accommodation selectedAccommodation = selectAccommodation(scanner, matchedAccommodations);
         Room selectedRoom = selectRoom(scanner, selectedAccommodation, checkIn, checkOut);
-        if (selectedRoom == null) {
-            System.out.println("El alojamiento no está disponible en esas fechas.");
-            return;
-        }
+        if (roomNotFound(selectedRoom)) return;
 
-        Client client = getClientInfo(scanner, clientsList);
+        Client client = getClientInfo(scanner, clients);
 
         Booking newBooking = createBooking(
                 client,
@@ -71,6 +64,30 @@ public class AccommodationBookingOption implements IMenu {
 
         System.out.println("\nSu reserva ha sido creada exitosamente, estos son los detalles: ");
         System.out.println(newBooking);
+    }
+
+    private static boolean roomNotFound(Room selectedRoom) {
+        if (selectedRoom == null) {
+            System.out.println("El alojamiento no está disponible en esas fechas.");
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean accommodationsNotFound(List<Accommodation> matchedAccommodations) {
+        if (matchedAccommodations.isEmpty()) {
+            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad y tipo seleccionados.");
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean accommodationNotFoundByCity(List<Accommodation> accommodationsByCity, String citySelected) {
+        if (accommodationsByCity.isEmpty()) {
+            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
+            return true;
+        }
+        return false;
     }
 
     private static void showAccommodationsByCity(String citySelected, List<Accommodation> accommodationsByCity) {
@@ -106,7 +123,8 @@ public class AccommodationBookingOption implements IMenu {
     }
 
     private static String getCity(Scanner scanner) {
-        System.out.print("\nIngrese la ciudad de su interés: ");
+        System.out.print("\nIngrese la ciudad de su interés ");
+        System.out.print(CityRepository.CITIES + ": ");
         scanner.nextLine();
         return scanner.nextLine();
     }
@@ -221,12 +239,4 @@ public class AccommodationBookingOption implements IMenu {
 
         return new Booking(client, accommodation, room, checkIn, checkOut, adults, kids);
     }
-
-    private static boolean compareIgnoringAccentsAndCase(String firstStr, String secondStr){
-        String firstNormalizedStr = Normalizer.normalize(firstStr, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
-        String secondNormalizedStr = Normalizer.normalize(secondStr, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
-
-        return firstNormalizedStr.equals(secondNormalizedStr);
-    }
-
 }
