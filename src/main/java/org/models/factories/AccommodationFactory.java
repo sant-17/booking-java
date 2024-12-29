@@ -1,8 +1,11 @@
 package org.models.factories;
 
 import org.models.Accommodation;
+import org.repository.CityRepository;
 
 import java.util.*;
+
+import static org.utils.StringUtility.getStringElementByIndexModule;
 
 public class AccommodationFactory {
 
@@ -15,7 +18,6 @@ public class AccommodationFactory {
     private static final List<String> HOTEL_NAMES = Arrays.asList("Hotel Las Palmas", "Hotel El Refugio", "Hotel Sol y Luna");
     private static final List<String> APARTMENT_NAMES = Arrays.asList("Apartamento Buen Vista", "Apartamento Central", "Apartamento Panorámico");
     private static final List<String> FARM_NAMES = Arrays.asList("Finca El Matorral", "Finca La Esperanza", "Finca Los Cerezos");
-    private static final List<String> CITIES = Arrays.asList("Medellín", "Bogotá", "Cali");
 
     public static List<Accommodation> createAccommodations() {
         List<Accommodation> accommodations = new ArrayList<>();
@@ -32,7 +34,7 @@ public class AccommodationFactory {
 
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
-            String city = CITIES.get(i);
+            String city = getStringElementByIndexModule(CityRepository.CITIES, i);
             double rating = Math.round((RANDOM.nextDouble() * 4 + 1) * 10) / 10.0;
 
             accommodations.add(new Accommodation(name, type, city, rating));

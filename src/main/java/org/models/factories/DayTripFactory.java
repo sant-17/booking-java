@@ -1,6 +1,7 @@
 package org.models.factories;
 
 import org.models.DayTrip;
+import org.repository.CityRepository;
 
 import java.util.*;
 
@@ -37,9 +38,10 @@ public class DayTripFactory {
             double rating = generateRandomRating();
             double pricePerAdult = generateRandomAdultPrice();
             double pricePerKid = generateRandomKidPrice(pricePerAdult);
+            String city = getRandomCity();
             List<String> amenities = generateRandomAmenities();
 
-            dayTrips.add(new DayTrip(name, rating, pricePerAdult, pricePerKid, amenities));
+            dayTrips.add(new DayTrip(name, rating, pricePerAdult, pricePerKid, amenities, city));
         }
 
         return dayTrips;
@@ -48,6 +50,11 @@ public class DayTripFactory {
     private static double generateRandomRating() {
         double rating = 1.0 + (4.0 * DayTripFactory.RANDOM.nextDouble());
         return Math.round(rating * 10.0) / 10.0;
+    }
+
+    public static String getRandomCity() {
+        int index = DayTripFactory.RANDOM.nextInt(CityRepository.CITIES.size());
+        return CityRepository.CITIES.get(index);
     }
 
     private static double generateRandomAdultPrice() {
