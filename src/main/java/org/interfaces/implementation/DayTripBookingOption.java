@@ -3,9 +3,13 @@ package org.interfaces.implementation;
 import lombok.AllArgsConstructor;
 import org.models.*;
 import org.interfaces.IMenu;
+import org.repository.CityRepository;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 
 @AllArgsConstructor
 public class DayTripBookingOption implements IMenu {
@@ -21,7 +25,15 @@ public class DayTripBookingOption implements IMenu {
     }
 
     private static void handleDayTripBooking(Scanner scanner, List<Client> clients, List<DayTrip> dayTrips, List<Booking> bookings) {
-        DayTrip selectedDayTrip = selectDayTrip(scanner, dayTrips);
+        String citySelected = getCity(scanner);
+
+        List<DayTrip> dayTripsByCity = filterDayTripByCity(dayTrips, citySelected);
+        if (dayTripsByCity.isEmpty()) {
+            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
+            return;
+        }
+
+        DayTrip selectedDayTrip = selectDayTrip(scanner, dayTripsByCity);
         System.out.println("Ha seleccionado " + selectedDayTrip.getName());
 
         LocalDate dateBooking = getBookingDate(scanner);
@@ -41,6 +53,19 @@ public class DayTripBookingOption implements IMenu {
 
         System.out.println("Su reserva ha sido creada exitosamente, estos son los detalles: ");
         System.out.println(newBookingDayTrip);
+    }
+
+    private static String getCity(Scanner scanner) {
+        System.out.print("\nIngrese la ciudad de su interés ");
+        System.out.print(CityRepository.CITIES + ": ");
+        scanner.nextLine();
+        return scanner.nextLine();
+    }
+
+    private static List<DayTrip> filterDayTripByCity(List<DayTrip> dayTrips, String city) {
+        return dayTrips.stream()
+                .filter(dayTrip -> compareIgnoringAccentsAndCase(dayTrip.getCity(), city))
+                .collect(Collectors.toList());
     }
 
     private static DayTrip selectDayTrip(Scanner scanner, List<DayTrip> dayTrips) {
@@ -119,4 +144,5 @@ public class DayTripBookingOption implements IMenu {
 
         return new Booking(client, dayTrip, startDate, adults, kids);
     }
+
 }
