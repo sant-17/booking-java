@@ -34,7 +34,12 @@ public class DeleteBookingOption implements IModifyBookingMenu {
 
         bookings.remove(booking);
         client.getBookings().remove(booking);
-        System.out.println("Su anterior reserva ha sido cancelada. Puede proceder a realizar nuevamente su reserva. Su reserva anterior: \n" + booking);
-        System.out.println("Estas son sus reservas actuales: \n" + client.getBookings());
+        System.out.println("\nSu anterior reserva ha sido cancelada. Puede proceder a realizar nuevamente su reserva. Su reserva anterior: \n" + booking);
+
+        if (client.getBookings().isEmpty()) {
+            System.out.println("\nAVISO: YA NO TIENE MÁS RESERVAS");
+        } else {
+            System.out.println("\nEstas son sus reservas actuales: \n" + client.getBookings());
+        }
     }
 }

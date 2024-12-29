@@ -152,10 +152,15 @@ public class Room {
 
     @Override
     public String toString() {
-        return "[" +
-                "Tipo: '" + type + '\'' +
-                ", Descripción: '" + description + '\'' +
-                ", Precio/Noche: " + pricePerNight +
-                ']';
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        if (!type.equalsIgnoreCase("")) {
+            sb.append("Tipo: ").append(type).append(", ");
+        }
+        sb.append("Descripción: '").append(description)
+                .append("', Precio/Noche: ").append(pricePerNight)
+                .append(" ]");
+
+        return sb.toString();
     }
 }

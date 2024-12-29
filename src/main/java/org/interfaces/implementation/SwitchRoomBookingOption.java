@@ -33,8 +33,12 @@ public class SwitchRoomBookingOption implements IModifyBookingMenu {
         Accommodation accommodationToUpdate = clientAndBookingDTO.getBooking().getAccommodation();
 
         Room newRoom = selectRoom(scanner, accommodationToUpdate, booking);
+        if (newRoom == null) {
+            System.out.println("\nNo hay habitaciones disponibles para hacer un cambio");
+            return;
+        }
 
-        System.out.println("Ha seleccionado la siguiente habitación: ");
+        System.out.println("\nHa seleccionado la siguiente habitación: ");
         System.out.println(newRoom);
 
         accommodationToUpdate.getBookings().remove(booking);
@@ -61,8 +65,13 @@ public class SwitchRoomBookingOption implements IModifyBookingMenu {
     }
 
     private static Room selectRoom(Scanner scanner, Accommodation accommodationToUpdate, Booking booking) {
-        System.out.println("Elija una nueva habitación (puede corresponder a gastos adicionales): ");
         List<Room> availableRooms = accommodationToUpdate.getAvailableRooms(booking.getStartDate(), booking.getEndDate());
+
+        if (availableRooms.isEmpty()) {
+            return null;
+        }
+
+        System.out.println("\nElija una nueva habitación (puede corresponder a gastos adicionales): ");
         for (int i = 0; i < availableRooms.size(); i++) {
             System.out.println((i + 1) + ". " + availableRooms.get(i));
         }

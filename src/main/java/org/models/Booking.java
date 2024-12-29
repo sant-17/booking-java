@@ -54,8 +54,8 @@ public class Booking {
         if (accommodation != null) {
             return "Reserva[" +
                     "\n   - Cliente: " + client.getFullName() +
-                    "\n   - Alojamiento: " + accommodation.getName() +
-                    "\n   - Habitación: " + room.getType() + " " + room.getDescription() +
+                    "\n   - Alojamiento: " + accommodation.getName() + " (" + accommodation.getCity() + ")" +
+                    "\n   - Descripción: " + room.getType() + " " + room.getDescription() +
                     "\n   - Check-in: " + startDate +
                     "\n   - Check-out: " + endDate +
                     "\n   - Días: " + days +

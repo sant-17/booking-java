@@ -44,7 +44,7 @@ public class DayTripBookingOption implements IMenu {
     }
 
     private static DayTrip selectDayTrip(Scanner scanner, List<DayTrip> dayTrips) {
-        System.out.println("Estos son los complejos disponibles para un Día de Sol: ");
+        System.out.println("\nEstos son los complejos disponibles para un Día de Sol: \n");
 
         for (int i = 0; i < dayTrips.size(); i++) {
             System.out.println((i + 1) + ". " + dayTrips.get(i));
@@ -60,31 +60,31 @@ public class DayTripBookingOption implements IMenu {
         System.out.print("Mes (número del mes): ");
         int monthBookingDayTrip = scanner.nextInt();
         System.out.print("Día: ");
-        int dayBokingDayTrip = scanner.nextInt();
+        int dayBookingDayTrip = scanner.nextInt();
 
-        return LocalDate.of(2024, monthBookingDayTrip, dayBokingDayTrip);
+        return LocalDate.of(2024, monthBookingDayTrip, dayBookingDayTrip);
     }
 
     private static Client getClientInfo(Scanner scanner, List<Client> clients) {
         HashMap<String, String> basicData = new HashMap<>();
         HashMap<String, Integer> additionalData = new HashMap<>();
 
-        System.out.println("\nIngrese sus datos personales:");
-        System.out.print("Nombre completo: ");
+        System.out.println("\nIngrese sus datos personales");
+        System.out.print("- Nombre completo: ");
         scanner.nextLine();
         basicData.put("fullName", scanner.nextLine());
-        System.out.print("Correo electrónico: ");
+        System.out.print("- Correo electrónico: ");
         basicData.put("email", scanner.nextLine());
-        System.out.print("Nacionalidad: ");
+        System.out.print("- Nacionalidad: ");
         basicData.put("nationality", scanner.nextLine());
-        System.out.print("Número de teléfono: ");
+        System.out.print("- Número de teléfono: ");
         basicData.put("phoneNumber", scanner.nextLine());
 
-        System.out.print("Año de nacimiento: ");
+        System.out.print("- Año de nacimiento: ");
         additionalData.put("birthYear", scanner.nextInt());
-        System.out.print("Mes de nacimiento: ");
+        System.out.print("- Mes de nacimiento (número): ");
         additionalData.put("birthMonth", scanner.nextInt());
-        System.out.print("Día de nacimiento: ");
+        System.out.print("- Día de nacimiento: ");
         additionalData.put("birthDay", scanner.nextInt());
 
         LocalDate comparisonDateDayTripBooking = LocalDate.of(

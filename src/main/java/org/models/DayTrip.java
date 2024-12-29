@@ -106,23 +106,14 @@ public class DayTrip {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Día de Sol [Nombre: ").append(name)
-                .append(", Calificación: ").append(rating)
+        sb.append(name).append("[ ")
+                .append(" Calificación: ").append(rating)
                 .append(", Precio/Adulto: ").append(pricePerAdult)
-                .append(", Precio/Niñ@: ").append(pricePerKid)
+                .append(", Precio/Menor de edad: ").append(pricePerKid)
                 .append("]\nActividades:\n");
         for (String amenity : amenities) {
             sb.append("- ").append(amenity)
                     .append("\n");
-        }
-        if (!bookings.isEmpty()) {
-            sb.append("Reservas:\n");
-            for (Booking booking : bookings) {
-                sb.append("- Reserva para: ").append(booking.getClient().getFullName())
-                        .append(", Fecha: ").append(booking.getStartDate())
-                        .append(", Pago total: $").append(booking.getTotalPay())
-                        .append("\n");
-            }
         }
         return sb.toString();
     }

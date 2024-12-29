@@ -34,14 +34,14 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
 
         Booking booking = getBooking(scanner, client);
 
-        System.out.println("Ha elegido la siguiente reserva: ");
+        System.out.println("\nHa elegido la siguiente reserva: ");
         System.out.println(booking);
 
         return new ClientAndBookingDTO(client, booking);
     }
 
     private static Booking getBooking(Scanner scanner, Client client) {
-        System.out.println("Elija la reserva que desea modificar");
+        System.out.println("\nElija la reserva que desea modificar");
         for (int i = 0; i < client.getBookings().size(); i++) {
             System.out.println((i + 1) + ". " + client.getBookings().get(i));
         }
@@ -54,14 +54,14 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
     private static Client getClientInfo(Scanner scanner, List<Client> clients) {
         HashMap<String, Integer> additionalData = new HashMap<>();
 
-        System.out.println("Ha elegido actualizar una reservación ");
-        System.out.println("\nIngrese el correo electrónico con el que registró la reserva: ");
+        System.out.println("\nHa elegido actualizar una reservación ");
+        System.out.print("\nIngrese el correo electrónico con el que registró la reserva: ");
         String email = scanner.nextLine();
 
         System.out.print("Año de nacimiento: ");
         additionalData.put("birthYear", scanner.nextInt());
 
-        System.out.print("Mes de nacimiento: ");
+        System.out.print("Mes de nacimiento (número): ");
         additionalData.put("birthMonth", scanner.nextInt());
 
         System.out.print("Día de nacimiento: ");
@@ -81,7 +81,7 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
         Client selectedClient = null;
 
         if (matchingClient.isPresent()) {
-            System.out.println("Cliente encontrado: " + matchingClient.get());
+            System.out.println("\nCliente encontrado: " + matchingClient.get());
             selectedClient = matchingClient.get();
         }
         else {

@@ -40,6 +40,7 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.out.println("HUBO UN ERROR, INTENTE NUEVAMENTE");
+                scanner.nextLine();
             }
         }
     }
@@ -66,9 +67,8 @@ public class Main {
     }
 
     private static void displayMenu() {
-        System.out.println("---- SISTEMAS DE RESERVAS ----");
-        System.out.println("\nBienvenido al sistema de reservas," +
-                "\n¿Qué desea hacer hoy?" +
+        System.out.println("\n---- SISTEMAS DE RESERVAS ----");
+        System.out.println("\nBienvenido al sistema de reservas, ¿qué desea hacer hoy?" +
                 "\n\n1. Reservar hotel, apartamento o finca" +
                 "\n2. Reservar un día de sol" +
                 "\n3. Actualizar una reservación" +

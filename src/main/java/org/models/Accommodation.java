@@ -61,18 +61,23 @@ public class Accommodation {
                 .append(", Tipo: ").append(type)
                 .append(", Ciudad: ").append(city)
                 .append(", Calificación: ").append(rating)
-                .append("]\nHabitaciones:\n");
-        for (Room room : rooms) {
-            sb.append("- ID: ").append(room.getId());
+                .append(" ]");
 
-            if (!Objects.equals(room.getType(), "")) {
-                sb.append(", Tipo: ").append(room.getType());
+        if (!rooms.isEmpty()) {
+            sb.append("\nHabitaciones:\n");
+            for (Room room : rooms) {
+                sb.append("- ID: ").append(room.getId());
+
+                if (!Objects.equals(room.getType(), "")) {
+                    sb.append(", Tipo: ").append(room.getType());
+                }
+
+                sb.append(", Descripción: ").append(room.getDescription())
+                        .append(", Precio/Noche: $").append(room.getPricePerNight())
+                        .append("\n");
             }
-
-            sb.append(", Descripción: ").append(room.getDescription())
-                    .append(", Precio/Noche: $").append(room.getPricePerNight())
-                    .append("\n");
         }
+
         if (!bookings.isEmpty()) {
             sb.append("Reservas:\n");
             for (Booking booking : bookings) {

@@ -7,6 +7,7 @@ import org.models.Client;
 import org.models.Room;
 import org.interfaces.IMenu;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,16 +30,29 @@ public class AccommodationBookingOption implements IMenu {
         LocalDate checkIn = getCheckInDate(scanner);
         LocalDate checkOut = getCheckOutDate(scanner, checkIn);
         String citySelected = getCity(scanner);
+
+        List<Accommodation> accommodationsByCity = filterAccommodationsByCity(accommodationList, citySelected);
+        if (accommodationsByCity.isEmpty()) {
+            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
+            return;
+        }
+
+        showAccommodationsByCity(citySelected, accommodationsByCity);
+
         String accommodationType = getAccommodationType(scanner);
 
-        List<Accommodation> matchedAccommodations = filterAccommodations(accommodationList, citySelected, accommodationType);
+        List<Accommodation> matchedAccommodations = filterAccommodationsByCityAndType(accommodationList, citySelected, accommodationType);
         if (matchedAccommodations.isEmpty()) {
-            System.out.println("No se encontraron alojamientos disponibles para la ciudad y tipo seleccionados.");
+            System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad y tipo seleccionados.");
             return;
         }
 
         Accommodation selectedAccommodation = selectAccommodation(scanner, matchedAccommodations);
         Room selectedRoom = selectRoom(scanner, selectedAccommodation, checkIn, checkOut);
+        if (selectedRoom == null) {
+            System.out.println("El alojamiento no está disponible en esas fechas.");
+            return;
+        }
 
         Client client = getClientInfo(scanner, clientsList);
 
@@ -48,14 +62,22 @@ public class AccommodationBookingOption implements IMenu {
                 selectedRoom,
                 checkIn,
                 checkOut,
-                scanner);
+                scanner
+        );
 
         bookings.add(newBooking);
         selectedAccommodation.addBooking(newBooking);
         client.addBooking(newBooking);
 
-        System.out.println("Su reserva ha sido creada exitosamente, estos son los detalles: ");
+        System.out.println("\nSu reserva ha sido creada exitosamente, estos son los detalles: ");
         System.out.println(newBooking);
+    }
+
+    private static void showAccommodationsByCity(String citySelected, List<Accommodation> accommodationsByCity) {
+        System.out.println("\nEstos son los alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
+        for (Accommodation accommodation : accommodationsByCity) {
+            System.out.println("- " + accommodation.getName());
+        }
     }
 
     private static LocalDate getCheckInDate(Scanner scanner) {
@@ -77,11 +99,14 @@ public class AccommodationBookingOption implements IMenu {
                 System.out.println("FECHA INCORRECTA, EL DÍA DEL CHECKOUT NO PUEDE SER EL MISMO DÍA O ANTES DEL DÍA DE CHECK-IN");
             }
         } while (dayCheckOut <= checkIn.getDayOfMonth());
-        return LocalDate.of(2024, checkIn.getMonthValue(), dayCheckOut);
+
+        LocalDate checkOut = LocalDate.of(2024, checkIn.getMonthValue(), dayCheckOut);
+        System.out.println("\nCheck-in: " + checkIn + " | Check-out: " + checkOut);
+        return checkOut;
     }
 
     private static String getCity(Scanner scanner) {
-        System.out.print("Ingrese la ciudad de su interés: ");
+        System.out.print("\nIngrese la ciudad de su interés: ");
         scanner.nextLine();
         return scanner.nextLine();
     }
@@ -91,7 +116,7 @@ public class AccommodationBookingOption implements IMenu {
                 "\n1. Hotel" +
                 "\n2. Apartamento" +
                 "\n3. Finca" +
-                "\nIngrese el número del alojamiento: ");
+                "\nIngrese el número del tipo de alojamiento que desea: ");
         int type = scanner.nextInt();
         return switch (type) {
             case 1 -> "Hotel";
@@ -104,14 +129,20 @@ public class AccommodationBookingOption implements IMenu {
         };
     }
 
-    private static List<Accommodation> filterAccommodations(List<Accommodation> accommodations, String city, String type) {
+    private static List<Accommodation> filterAccommodationsByCity(List<Accommodation> accommodations, String city) {
         return accommodations.stream()
-                .filter(accommodation -> accommodation.getCity().equalsIgnoreCase(city) && accommodation.getType().equals(type))
+                .filter(accommodation -> compareIgnoringAccentsAndCase(accommodation.getCity(), city))
+                .collect(Collectors.toList());
+    }
+
+    private static List<Accommodation> filterAccommodationsByCityAndType(List<Accommodation> accommodations, String city, String type) {
+        return accommodations.stream()
+                .filter(accommodation -> compareIgnoringAccentsAndCase(accommodation.getCity(), city) && accommodation.getType().equals(type))
                 .collect(Collectors.toList());
     }
 
     private static Accommodation selectAccommodation(Scanner scanner, List<Accommodation> accommodations) {
-        System.out.println("Opciones disponibles:");
+        System.out.println("\nOpciones disponibles:");
         for (int i = 0; i < accommodations.size(); i++) {
             System.out.println((i + 1) + ". " + accommodations.get(i).getName());
         }
@@ -122,7 +153,12 @@ public class AccommodationBookingOption implements IMenu {
 
     private static Room selectRoom(Scanner scanner, Accommodation accommodation, LocalDate checkIn, LocalDate checkOut) {
         List<Room> availableRooms = accommodation.getAvailableRooms(checkIn, checkOut);
-        System.out.println("Habitaciones disponibles:");
+
+        if (availableRooms.isEmpty()) {
+            return null;
+        }
+
+        System.out.println("\nHabitaciones disponibles:");
         for (int i = 0; i < availableRooms.size(); i++) {
             System.out.println((i + 1) + ". " + availableRooms.get(i));
         }
@@ -135,22 +171,22 @@ public class AccommodationBookingOption implements IMenu {
         HashMap<String, String> basicData = new HashMap<>();
         HashMap<String, Integer> additionalData = new HashMap<>();
 
-        System.out.println("\nIngrese sus datos personales:");
-        System.out.print("Nombre completo: ");
+        System.out.println("\nIngrese sus datos personales");
+        System.out.print("- Nombre completo: ");
         scanner.nextLine();
         basicData.put("fullName", scanner.nextLine());
-        System.out.print("Correo electrónico: ");
+        System.out.print("- Correo electrónico: ");
         basicData.put("email", scanner.nextLine());
-        System.out.print("Nacionalidad: ");
+        System.out.print("- Nacionalidad: ");
         basicData.put("nationality", scanner.nextLine());
-        System.out.print("Número de teléfono: ");
+        System.out.print("- Número de teléfono: ");
         basicData.put("phoneNumber", scanner.nextLine());
 
-        System.out.print("Año de nacimiento: ");
+        System.out.print("- Año de nacimiento: ");
         additionalData.put("birthYear", scanner.nextInt());
-        System.out.print("Mes de nacimiento: ");
+        System.out.print("- Mes de nacimiento (número): ");
         additionalData.put("birthMonth", scanner.nextInt());
-        System.out.print("Día de nacimiento: ");
+        System.out.print("- Día de nacimiento: ");
         additionalData.put("birthDay", scanner.nextInt());
 
         LocalDate comparisonDateDayTripBooking = LocalDate.of(
@@ -172,6 +208,7 @@ public class AccommodationBookingOption implements IMenu {
                     basicData.get("phoneNumber"),
                     comparisonDateDayTripBooking);
             clientsList.add(newClient);
+            System.out.println("Se han guardado sus datos para futuras reservas.");
             return newClient;
         });
     }
@@ -183,6 +220,13 @@ public class AccommodationBookingOption implements IMenu {
         int kids = scanner.nextInt();
 
         return new Booking(client, accommodation, room, checkIn, checkOut, adults, kids);
+    }
+
+    private static boolean compareIgnoringAccentsAndCase(String firstStr, String secondStr){
+        String firstNormalizedStr = Normalizer.normalize(firstStr, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
+        String secondNormalizedStr = Normalizer.normalize(secondStr, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
+
+        return firstNormalizedStr.equals(secondNormalizedStr);
     }
 
 }
