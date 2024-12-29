@@ -67,7 +67,7 @@ public class Booking {
         } else {
             return "Reserva[" +
                     "\n   - Cliente: " + client.getFullName() +
-                    "\n   - Alojamiento:  Día de Sol " + dayTrip.getName() +
+                    "\n   - Alojamiento:  Día de Sol " + dayTrip.getName() + " (" + dayTrip.getCity() + ")" +
                     "\n   - Fecha: " + startDate +
                     "\n   - Adultos: " + adults +
                     "\n   - Niños: " + kids +
