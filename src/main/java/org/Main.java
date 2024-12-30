@@ -1,6 +1,9 @@
 package org;
 
-import org.interfaces.implementation.*;
+import org.interfaces.IBookingUpdateMenu;
+import org.interfaces.IMenu;
+import org.interfaces.IModifyBookingMenu;
+import org.interfaces.proxys.*;
 import org.models.*;
 import org.repositories.AccommodationRepository;
 import org.repositories.BookingRepository;
@@ -11,16 +14,17 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        displayClients();
         displayBookings();
 
         boolean whileCondition = true;
         Scanner scanner = new Scanner(System.in);
 
-        AccommodationBookingOption accommodationBookingOption = new AccommodationBookingOption(scanner);
-        DayTripBookingOption dayTripBookingOption = new DayTripBookingOption(scanner);
-        BookingUpdateOption bookingUpdateOption = new BookingUpdateOption(scanner);
-        SwitchRoomBookingOption switchRoomBookingOption = new SwitchRoomBookingOption(scanner);
-        DeleteBookingOption deleteBookingOption = new DeleteBookingOption();
+        IMenu accommodationBookingProxy = new AccommodationBookingProxy(scanner);
+        IMenu dayTripBookingProxy = new DayTripBookingProxy(scanner);
+        IBookingUpdateMenu bookingUpdateProxy = new BookingUpdateProxy(scanner);
+        IModifyBookingMenu switchRoomBookingProxy = new SwitchRoomBookingProxy(scanner);
+        IModifyBookingMenu deleteBookingProxy = new DeleteBookingProxy();
 
         while (whileCondition) {
             try {
@@ -29,9 +33,9 @@ public class Main {
                 int option = scanner.nextInt();
 
                 switch (option) {
-                    case 1 -> accommodationBookingOption.execute();
-                    case 2 -> dayTripBookingOption.execute();
-                    case 3 -> updateBookingOption(bookingUpdateOption, scanner, switchRoomBookingOption, deleteBookingOption);
+                    case 1 -> accommodationBookingProxy.execute();
+                    case 2 -> dayTripBookingProxy.execute();
+                    case 3 -> updateBookingOption(bookingUpdateProxy, switchRoomBookingProxy, deleteBookingProxy, scanner);
                     case 4 -> whileCondition = false;
                     default -> System.out.println("OPCIÓN NO VÁLIDA");
                 }
@@ -42,18 +46,20 @@ public class Main {
         }
     }
 
-    private static void updateBookingOption(BookingUpdateOption bookingUpdateOption, Scanner scanner, SwitchRoomBookingOption switchRoomBookingOption, DeleteBookingOption deleteBookingOption) {
-        Booking clientBooking = bookingUpdateOption.execute();
+    private static void updateBookingOption(IBookingUpdateMenu bookingUpdateProxy,
+                                            IModifyBookingMenu switchRoomBookingProxy,
+                                            IModifyBookingMenu deleteBookingProxy,
+                                            Scanner scanner) {
+        Booking clientBooking = bookingUpdateProxy.execute();
         if (clientBooking == null) return;
         int selectedOption = getSelectedOptionUpdate(scanner);
 
         switch (selectedOption) {
-            case 1 -> switchRoomBookingOption.execute(clientBooking);
-            case 2 -> deleteBookingOption.execute(clientBooking);
+            case 1 -> switchRoomBookingProxy.execute(clientBooking);
+            case 2 -> deleteBookingProxy.execute(clientBooking);
             default -> System.out.println("OPCIÓN NO VÁLIDA");
         }
     }
-
 
     private static int getSelectedOptionUpdate(Scanner scanner) {
         System.out.print("\n¿Qué desea hacer?" +
