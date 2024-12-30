@@ -1,7 +1,7 @@
 package org.interfaces;
 
-import org.dto.ClientAndBookingDTO;
+import org.models.Booking;
 
 public interface IBookingUpdateMenu {
-    ClientAndBookingDTO execute();
+    Booking execute();
 }

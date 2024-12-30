@@ -1,10 +1,10 @@
 package org.interfaces.implementation;
 
 import lombok.AllArgsConstructor;
-import org.dto.ClientAndBookingDTO;
 import org.models.Booking;
 import org.models.Client;
 import org.interfaces.IBookingUpdateMenu;
+import org.repositories.ClientRepository;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -15,17 +15,16 @@ import java.util.Scanner;
 @AllArgsConstructor
 public class BookingUpdateOption implements IBookingUpdateMenu {
     private Scanner scanner;
-    private List<Client> clients;
 
     @Override
-    public ClientAndBookingDTO execute() {
-        return handleBookingUpdateOption(scanner, clients);
+    public Booking execute() {
+        return handleBookingUpdateOption(scanner);
     }
 
-    private static ClientAndBookingDTO handleBookingUpdateOption(Scanner scanner, List<Client> clients) {
+    private static Booking handleBookingUpdateOption(Scanner scanner) {
         scanner.nextLine();
 
-        Client client = getClientInfo(scanner, clients);
+        Client client = getClientInfo(scanner);
         if (client == null) return null;
 
         if (client.getBookings().isEmpty()) {
@@ -33,25 +32,35 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
         }
 
         Booking booking = getBooking(scanner, client);
+        if (booking == null) return null;
 
         System.out.println("\nHa elegido la siguiente reserva: ");
         System.out.println(booking);
 
-        return new ClientAndBookingDTO(client, booking);
+        return booking;
     }
 
     private static Booking getBooking(Scanner scanner, Client client) {
+        List<Booking> clientBookings = client.getBookings();
+
+        if (clientBookings.isEmpty()) {
+            return null;
+        }
+
         System.out.println("\nElija la reserva que desea modificar");
-        for (int i = 0; i < client.getBookings().size(); i++) {
+        for (int i = 0; i < clientBookings.size(); i++) {
             System.out.println((i + 1) + ". " + client.getBookings().get(i));
         }
 
         System.out.print("Ingrese el número de la reserva: ");
         int numberBookingToUpdate = scanner.nextInt() - 1;
+
         return client.getBookings().get(numberBookingToUpdate);
     }
 
-    private static Client getClientInfo(Scanner scanner, List<Client> clients) {
+    private static Client getClientInfo(Scanner scanner) {
+        ClientRepository clientRepository = ClientRepository.getInstance();
+
         HashMap<String, Integer> additionalData = new HashMap<>();
 
         System.out.println("\nHa elegido actualizar una reservación ");
@@ -73,7 +82,7 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
                 additionalData.get("birthDay")
         );
 
-        Optional<Client> matchingClient = clients.stream()
+        Optional<Client> matchingClient = clientRepository.getClients().stream()
                 .filter(client -> client.getEmail().equalsIgnoreCase(email) &&
                         client.getBirthDate().isEqual(comparisonDate))
                 .findFirst();

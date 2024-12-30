@@ -18,6 +18,7 @@ public class Room {
     private Double pricePerNight;
     private List<RegisterBooking> bookings;
 
+
     public Room(Integer id, String type, String description, Double pricePerNight) {
         this.id = id;
         this.type = type;
@@ -25,6 +26,7 @@ public class Room {
         this.pricePerNight = pricePerNight;
         this.bookings = new ArrayList<>();
     }
+
 
     public Room(Integer id, String description, Double pricePerNight) {
         this.id = id;
@@ -34,8 +36,14 @@ public class Room {
         this.bookings = new ArrayList<>();
     }
 
-    public void addBooking(RegisterBooking register) {
+
+    public void addRegisterBooking(RegisterBooking register) {
         this.bookings.add(register);
+    }
+
+
+    public void removeRegisterBooking(RegisterBooking register) {
+        this.bookings.remove(register);
     }
 
 

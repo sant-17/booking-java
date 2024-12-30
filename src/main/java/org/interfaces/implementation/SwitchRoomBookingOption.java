@@ -1,12 +1,12 @@
 package org.interfaces.implementation;
 
 import lombok.AllArgsConstructor;
-import org.dto.ClientAndBookingDTO;
 import org.interfaces.IModifyBookingMenu;
 import org.models.Accommodation;
 import org.models.Booking;
 import org.models.Client;
 import org.models.Room;
+import org.repositories.BookingRepository;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,23 +14,21 @@ import java.util.Scanner;
 @AllArgsConstructor
 public class SwitchRoomBookingOption implements IModifyBookingMenu {
     private Scanner scanner;
-    private List<Booking> bookings;
 
     @Override
-    public void execute(ClientAndBookingDTO clientAndBookingDTO) {
-        handleSwitchRoomBookingOption(scanner, bookings, clientAndBookingDTO);
+    public void execute(Booking booking) {
+        handleSwitchRoomBookingOption(scanner, booking);
     }
 
-    private static void handleSwitchRoomBookingOption(Scanner scanner, List<Booking> bookings, ClientAndBookingDTO clientAndBookingDTO) {
-        Booking booking = clientAndBookingDTO.getBooking();
-        Client client = clientAndBookingDTO.getClient();
+    private static void handleSwitchRoomBookingOption(Scanner scanner, Booking booking) {
+        Client client = booking.getClient();
 
         if (booking.getDayTrip() != null) {
             System.out.println("NO PUEDE CAMBIAR HABITACIÓN DE UN DÍA DE SOL");
             return;
         }
 
-        Accommodation accommodationToUpdate = clientAndBookingDTO.getBooking().getAccommodation();
+        Accommodation accommodationToUpdate = booking.getAccommodation();
 
         Room newRoom = selectRoom(scanner, accommodationToUpdate, booking);
         if (newRoom == null) {
@@ -38,13 +36,9 @@ public class SwitchRoomBookingOption implements IModifyBookingMenu {
             return;
         }
 
-        System.out.println("\nHa seleccionado la siguiente habitación: ");
-        System.out.println(newRoom);
+        System.out.println("\nHa seleccionado la siguiente habitación: " + newRoom);
 
-        accommodationToUpdate.getBookings().remove(booking);
-        booking.getRoom().getBookings().remove(booking.getRegisterBooking());
-        client.getBookings().remove(booking);
-        bookings.remove(booking);
+        deleteBooking(booking, accommodationToUpdate, client);
 
         Booking bookingUpdate = new Booking(
                 client,
@@ -60,8 +54,15 @@ public class SwitchRoomBookingOption implements IModifyBookingMenu {
         booking.getAccommodation().addBooking(bookingUpdate);
         client.addBooking(bookingUpdate);
 
-        System.out.println("Así quedó tu reserva: ");
+        System.out.println("Así quedó su reserva: ");
         System.out.println(bookingUpdate);
+    }
+
+    private static void deleteBooking(Booking booking, Accommodation accommodationToUpdate, Client client) {
+        accommodationToUpdate.removeBooking(booking);
+        booking.getRoom().removeRegisterBooking(booking.getRegisterBooking());
+        client.removeBooking(booking);
+        BookingRepository.getInstance().deleteBooking(booking);
     }
 
     private static Room selectRoom(Scanner scanner, Accommodation accommodationToUpdate, Booking booking) {

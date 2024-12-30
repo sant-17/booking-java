@@ -1,39 +1,37 @@
 package org.interfaces.implementation;
 
 import lombok.AllArgsConstructor;
-import org.dto.ClientAndBookingDTO;
 import org.interfaces.IModifyBookingMenu;
 import org.models.Accommodation;
 import org.models.Booking;
 import org.models.Client;
 import org.models.DayTrip;
+import org.repositories.BookingRepository;
 
 import java.util.List;
 
 @AllArgsConstructor
 public class DeleteBookingOption implements IModifyBookingMenu {
-    private List<Booking> bookings;
 
     @Override
-    public void execute(ClientAndBookingDTO clientAndBookingDTO) {
-        handleDeleteBookingOption(bookings, clientAndBookingDTO);
+    public void execute(Booking booking) {
+        handleDeleteBookingOption(booking);
     }
 
-    public static void handleDeleteBookingOption(List<Booking> bookings, ClientAndBookingDTO clientAndBookingDTO) {
-        Booking booking = clientAndBookingDTO.getBooking();
-        Client client = clientAndBookingDTO.getClient();
+    public static void handleDeleteBookingOption(Booking booking) {
+        Client client = booking.getClient();
 
         if (booking.getDayTrip() != null) {
             DayTrip dayTripToDelete = booking.getDayTrip();
-            dayTripToDelete.getBookings().remove(booking);
+            dayTripToDelete.removeBooking(booking);
         } else {
             Accommodation accommodationToDelete = booking.getAccommodation();
-            accommodationToDelete.getBookings().remove(booking);
-            booking.getRoom().getBookings().remove(booking.getRegisterBooking());
+            accommodationToDelete.removeBooking(booking);
+            booking.getRoom().removeRegisterBooking(booking.getRegisterBooking());
         }
 
-        bookings.remove(booking);
-        client.getBookings().remove(booking);
+        BookingRepository.getInstance().deleteBooking(booking);
+        client.removeBooking(booking);
         System.out.println("\nSu anterior reserva ha sido cancelada. Puede proceder a realizar nuevamente su reserva. Su reserva anterior: \n" + booking);
 
         if (client.getBookings().isEmpty()) {

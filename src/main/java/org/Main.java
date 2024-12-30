@@ -1,29 +1,26 @@
 package org;
 
-import org.dto.ClientAndBookingDTO;
 import org.interfaces.implementation.*;
 import org.models.*;
-import org.models.factories.*;
+import org.repositories.AccommodationRepository;
+import org.repositories.BookingRepository;
+import org.repositories.ClientRepository;
+import org.repositories.DayTripRepository;
 
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-
-        List<Client> clientsList = createAndDisplayClients();
-        List<DayTrip> dayTripList = createAndDisplayDayTrips();
-        List<Accommodation> accommodationList = createAndDisplayAccommodations();
-        createRoomsForAccommodations(accommodationList);
-        List<Booking> bookings = createAndDisplayBookings(clientsList, dayTripList, accommodationList);
+        displayBookings();
 
         boolean whileCondition = true;
         Scanner scanner = new Scanner(System.in);
 
-        AccommodationBookingOption accommodationBookingOption = new AccommodationBookingOption(scanner, clientsList, accommodationList, bookings);
-        DayTripBookingOption dayTripBookingOption = new DayTripBookingOption(scanner, clientsList, dayTripList, bookings);
-        BookingUpdateOption bookingUpdateOption = new BookingUpdateOption(scanner, clientsList);
-        SwitchRoomBookingOption switchRoomBookingOption = new SwitchRoomBookingOption(scanner, bookings);
-        DeleteBookingOption deleteBookingOption = new DeleteBookingOption(bookings);
+        AccommodationBookingOption accommodationBookingOption = new AccommodationBookingOption(scanner);
+        DayTripBookingOption dayTripBookingOption = new DayTripBookingOption(scanner);
+        BookingUpdateOption bookingUpdateOption = new BookingUpdateOption(scanner);
+        SwitchRoomBookingOption switchRoomBookingOption = new SwitchRoomBookingOption(scanner);
+        DeleteBookingOption deleteBookingOption = new DeleteBookingOption();
 
         while (whileCondition) {
             try {
@@ -46,13 +43,13 @@ public class Main {
     }
 
     private static void updateBookingOption(BookingUpdateOption bookingUpdateOption, Scanner scanner, SwitchRoomBookingOption switchRoomBookingOption, DeleteBookingOption deleteBookingOption) {
-        ClientAndBookingDTO clientAndBookingDTO = bookingUpdateOption.execute();
-        if (clientAndBookingDTO == null) return;
+        Booking clientBooking = bookingUpdateOption.execute();
+        if (clientBooking == null) return;
         int selectedOption = getSelectedOptionUpdate(scanner);
 
         switch (selectedOption) {
-            case 1 -> switchRoomBookingOption.execute(clientAndBookingDTO);
-            case 2 -> deleteBookingOption.execute(clientAndBookingDTO);
+            case 1 -> switchRoomBookingOption.execute(clientBooking);
+            case 2 -> deleteBookingOption.execute(clientBooking);
             default -> System.out.println("OPCIÓN NO VÁLIDA");
         }
     }
@@ -75,48 +72,27 @@ public class Main {
                 "\n4. SALIR");
     }
 
-    private static List<Client> createAndDisplayClients() {
-        List<Client> clientsList = ClientFactory.createClients(5);
-        for (Client client : clientsList) {
+    private static void displayClients() {
+        for (Client client : ClientRepository.getInstance().getClients()) {
             System.out.println(client);
         }
-        return clientsList;
     }
 
-    private static List<DayTrip> createAndDisplayDayTrips() {
-        List<DayTrip> dayTripList = DayTripFactory.createDayTrips(3);
-        for (DayTrip dayTrip : dayTripList) {
+    private static void displayDayTrips() {
+        for (DayTrip dayTrip : DayTripRepository.getInstance().getDayTrips()) {
             System.out.println(dayTrip);
         }
-        return dayTripList;
     }
 
-    private static List<Accommodation> createAndDisplayAccommodations() {
-        List<Accommodation> accommodationList = AccommodationFactory.createAccommodations();
-        for (Accommodation accommodation : accommodationList) {
+    private static void displayAccommodations() {
+        for (Accommodation accommodation : AccommodationRepository.getInstance().getAccommodations()) {
             System.out.println(accommodation);
         }
-        return accommodationList;
     }
 
-    private static void createRoomsForAccommodations(List<Accommodation> accommodations) {
-        for (Accommodation accommodation : accommodations) {
-            RoomFactory.createRoomsForAccommodation(accommodation);
-        }
-    }
-
-    private static List<Booking> createAndDisplayBookings(
-            List<Client> clientsList,
-            List<DayTrip> dayTripList,
-            List<Accommodation> accommodationList) {
-
-        List<Booking> bookings = BookingFactory.createBookingsForDayTrips(clientsList, dayTripList);
-        bookings.addAll(BookingFactory.createBookingsForAccommodations(clientsList, accommodationList));
-
-        for (Booking booking : bookings) {
+    private static void displayBookings() {
+        for (Booking booking : BookingRepository.getInstance().getBookings()) {
             System.out.println(booking);
         }
-
-        return bookings;
     }
 }

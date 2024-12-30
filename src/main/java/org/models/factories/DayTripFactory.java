@@ -1,7 +1,7 @@
 package org.models.factories;
 
 import org.models.DayTrip;
-import org.repository.CityRepository;
+import org.constants.CityData;
 
 import java.util.*;
 
@@ -28,7 +28,8 @@ public class DayTripFactory {
     private static final List<Double> ADULT_PRICES = Arrays.asList(50.0, 80.0, 120.0, 150.0, 180.0);
     private static final List<Double> KID_PRICES = Arrays.asList(20.0, 30.0, 40.0, 50.0, 60.0);
 
-    public static List<DayTrip> createDayTrips(int numberOfDayTrips) {
+    public static List<DayTrip> createDayTrips() {
+        int numberOfDayTrips = 6;
         List<DayTrip> dayTrips = new ArrayList<>();
         int availableTrips = Math.min(numberOfDayTrips, DAY_TRIP_NAMES.size());
         Set<String> usedNames = new HashSet<>();
@@ -53,8 +54,8 @@ public class DayTripFactory {
     }
 
     public static String getRandomCity() {
-        int index = DayTripFactory.RANDOM.nextInt(CityRepository.CITIES.size());
-        return CityRepository.CITIES.get(index);
+        int index = DayTripFactory.RANDOM.nextInt(CityData.CITIES.size());
+        return CityData.CITIES.get(index);
     }
 
     private static double generateRandomAdultPrice() {

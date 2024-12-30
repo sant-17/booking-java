@@ -25,7 +25,7 @@ public class Booking {
 
     public Booking(Client client, Accommodation accommodation,Room room, LocalDate startDate, LocalDate endDate, Integer adults, Integer kids) {
         this.registerBooking = new RegisterBooking(startDate, endDate);
-        room.addBooking(registerBooking);
+        room.addRegisterBooking(registerBooking);
 
         this.client = client;
         this.accommodation = accommodation;

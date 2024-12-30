@@ -44,6 +44,10 @@ public class Accommodation {
         this.bookings.add(booking);
     }
 
+    public void removeBooking(Booking booking) {
+        this.bookings.add(booking);
+    }
+
     public List<Room> getAvailableRooms(LocalDate startDate, LocalDate endDate) {
         List<Room> availableRooms = new ArrayList<>();
         for (Room room : this.rooms) {

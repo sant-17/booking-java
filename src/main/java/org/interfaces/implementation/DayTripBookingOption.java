@@ -3,7 +3,10 @@ package org.interfaces.implementation;
 import lombok.AllArgsConstructor;
 import org.models.*;
 import org.interfaces.IMenu;
-import org.repository.CityRepository;
+import org.constants.CityData;
+import org.repositories.BookingRepository;
+import org.repositories.ClientRepository;
+import org.repositories.DayTripRepository;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -15,19 +18,16 @@ import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 public class DayTripBookingOption implements IMenu {
 
     private Scanner scanner;
-    private List<Client> clients;
-    private List<DayTrip> dayTrips;
-    private List<Booking> bookings;
 
     @Override
     public void execute() {
-        handleDayTripBooking(scanner, clients, dayTrips, bookings);
+        handleDayTripBooking(scanner);
     }
 
-    private static void handleDayTripBooking(Scanner scanner, List<Client> clients, List<DayTrip> dayTrips, List<Booking> bookings) {
+    private static void handleDayTripBooking(Scanner scanner) {
         String citySelected = getCity(scanner);
 
-        List<DayTrip> dayTripsByCity = filterDayTripByCity(dayTrips, citySelected);
+        List<DayTrip> dayTripsByCity = filterDayTripByCity(citySelected);
         if (dayTripsByCity.isEmpty()) {
             System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
             return;
@@ -38,7 +38,7 @@ public class DayTripBookingOption implements IMenu {
 
         LocalDate dateBooking = getBookingDate(scanner);
 
-        Client client = getClientInfo(scanner, clients);
+        Client client = getClientInfo(scanner);
 
         Booking newBookingDayTrip = createBooking(
                 client,
@@ -47,7 +47,7 @@ public class DayTripBookingOption implements IMenu {
                 scanner
         );
 
-        bookings.add(newBookingDayTrip);
+        BookingRepository.getInstance().addBooking(newBookingDayTrip);
         selectedDayTrip.addBooking(newBookingDayTrip);
         client.addBooking(newBookingDayTrip);
 
@@ -57,13 +57,13 @@ public class DayTripBookingOption implements IMenu {
 
     private static String getCity(Scanner scanner) {
         System.out.print("\nIngrese la ciudad de su interés ");
-        System.out.print(CityRepository.CITIES + ": ");
+        System.out.print(CityData.CITIES + ": ");
         scanner.nextLine();
         return scanner.nextLine();
     }
 
-    private static List<DayTrip> filterDayTripByCity(List<DayTrip> dayTrips, String city) {
-        return dayTrips.stream()
+    private static List<DayTrip> filterDayTripByCity(String city) {
+        return DayTripRepository.getInstance().getDayTrips().stream()
                 .filter(dayTrip -> compareIgnoringAccentsAndCase(dayTrip.getCity(), city))
                 .collect(Collectors.toList());
     }
@@ -90,7 +90,9 @@ public class DayTripBookingOption implements IMenu {
         return LocalDate.of(2024, monthBookingDayTrip, dayBookingDayTrip);
     }
 
-    private static Client getClientInfo(Scanner scanner, List<Client> clients) {
+    private static Client getClientInfo(Scanner scanner) {
+        ClientRepository clientRepository = ClientRepository.getInstance();
+
         HashMap<String, String> basicData = new HashMap<>();
         HashMap<String, Integer> additionalData = new HashMap<>();
 
@@ -118,7 +120,7 @@ public class DayTripBookingOption implements IMenu {
                 additionalData.get("birthDay")
         );
 
-        Optional<Client> existingClient = clients.stream()
+        Optional<Client> existingClient = clientRepository.getClients().stream()
                 .filter(client -> client.getEmail().equalsIgnoreCase(basicData.get("email")) &&
                         client.getBirthDate().isEqual(comparisonDateDayTripBooking))
                 .findFirst();
@@ -130,7 +132,7 @@ public class DayTripBookingOption implements IMenu {
                     basicData.get("nationality"),
                     basicData.get("phoneNumber"),
                     comparisonDateDayTripBooking);
-            clients.add(newClient);
+            clientRepository.addClient(newClient);
             System.out.println("Se han guardado sus datos para futuras reservas.");
             return newClient;
         });

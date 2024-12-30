@@ -1,7 +1,7 @@
 package org.models.factories;
 
 import org.models.Accommodation;
-import org.repository.CityRepository;
+import org.constants.CityData;
 
 import java.util.*;
 
@@ -34,7 +34,7 @@ public class AccommodationFactory {
 
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
-            String city = getStringElementByIndexModule(CityRepository.CITIES, i);
+            String city = getStringElementByIndexModule(CityData.CITIES, i);
             double rating = Math.round((RANDOM.nextDouble() * 4 + 1) * 10) / 10.0;
 
             accommodations.add(new Accommodation(name, type, city, rating));

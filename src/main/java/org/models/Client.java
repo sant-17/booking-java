@@ -43,6 +43,10 @@ public class Client {
         this.bookings.add(booking);
     }
 
+    public void removeBooking(Booking booking) {
+        this.bookings.remove(booking);
+    }
+
     @Override
     public String toString() {
 

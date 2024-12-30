@@ -6,7 +6,10 @@ import org.models.Booking;
 import org.models.Client;
 import org.models.Room;
 import org.interfaces.IMenu;
-import org.repository.CityRepository;
+import org.constants.CityData;
+import org.repositories.AccommodationRepository;
+import org.repositories.BookingRepository;
+import org.repositories.ClientRepository;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -18,20 +21,20 @@ import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 public class AccommodationBookingOption implements IMenu {
 
     private Scanner scanner;
-    private List<Client> clients;
-    private List<Accommodation> accommodations;
-    private List<Booking> bookings;
 
     @Override
     public void execute() {
-        handleAccommodationBooking(scanner, clients, accommodations, bookings);
+        handleAccommodationBooking(scanner);
     }
 
-    private static void handleAccommodationBooking(Scanner scanner, List<Client> clients, List<Accommodation> accommodations, List<Booking> bookings) {
+    private static void handleAccommodationBooking(Scanner scanner) {
+        AccommodationRepository accommodationRepository = AccommodationRepository.getInstance();
 
         String citySelected = getCity(scanner);
 
-        List<Accommodation> accommodationsByCity = filterAccommodationsByCity(accommodations, citySelected);
+        List<Accommodation> accommodationsByCity = filterAccommodationsByCity(
+                accommodationRepository.getAccommodations(),
+                citySelected);
         if (accommodationNotFoundByCity(accommodationsByCity, citySelected)) return;
         showAccommodationsByCity(citySelected, accommodationsByCity);
 
@@ -40,14 +43,17 @@ public class AccommodationBookingOption implements IMenu {
 
         String accommodationType = getAccommodationType(scanner);
 
-        List<Accommodation> matchedAccommodations = filterAccommodationsByCityAndType(accommodations, citySelected, accommodationType);
+        List<Accommodation> matchedAccommodations = filterAccommodationsByCityAndType(
+                accommodationRepository.getAccommodations(),
+                citySelected,
+                accommodationType);
         if (accommodationsNotFound(matchedAccommodations)) return;
 
         Accommodation selectedAccommodation = selectAccommodation(scanner, matchedAccommodations);
         Room selectedRoom = selectRoom(scanner, selectedAccommodation, checkIn, checkOut);
         if (roomNotFound(selectedRoom)) return;
 
-        Client client = getClientInfo(scanner, clients);
+        Client client = getClientInfo(scanner);
 
         Booking newBooking = createBooking(
                 client,
@@ -58,7 +64,7 @@ public class AccommodationBookingOption implements IMenu {
                 scanner
         );
 
-        bookings.add(newBooking);
+        BookingRepository.getInstance().addBooking(newBooking);
         selectedAccommodation.addBooking(newBooking);
         client.addBooking(newBooking);
 
@@ -124,7 +130,7 @@ public class AccommodationBookingOption implements IMenu {
 
     private static String getCity(Scanner scanner) {
         System.out.print("\nIngrese la ciudad de su interés ");
-        System.out.print(CityRepository.CITIES + ": ");
+        System.out.print(CityData.CITIES + ": ");
         scanner.nextLine();
         return scanner.nextLine();
     }
@@ -185,7 +191,9 @@ public class AccommodationBookingOption implements IMenu {
         return availableRooms.get(index);
     }
 
-    private static Client getClientInfo(Scanner scanner, List<Client> clientsList) {
+    private static Client getClientInfo(Scanner scanner) {
+        ClientRepository clientRepository = ClientRepository.getInstance();
+
         HashMap<String, String> basicData = new HashMap<>();
         HashMap<String, Integer> additionalData = new HashMap<>();
 
@@ -213,7 +221,7 @@ public class AccommodationBookingOption implements IMenu {
                 additionalData.get("birthDay")
         );
 
-        Optional<Client> existingClient = clientsList.stream()
+        Optional<Client> existingClient = clientRepository.getClients().stream()
                 .filter(client -> client.getEmail().equalsIgnoreCase(basicData.get("email")) &&
                         client.getBirthDate().isEqual(comparisonDateDayTripBooking))
                 .findFirst();
@@ -225,8 +233,7 @@ public class AccommodationBookingOption implements IMenu {
                     basicData.get("nationality"),
                     basicData.get("phoneNumber"),
                     comparisonDateDayTripBooking);
-            clientsList.add(newClient);
-            System.out.println("Se han guardado sus datos para futuras reservas.");
+            clientRepository.addClient(newClient);
             return newClient;
         });
     }

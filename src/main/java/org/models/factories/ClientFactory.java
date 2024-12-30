@@ -19,7 +19,9 @@ public class ClientFactory {
     private static final List<String> SURNAMES = Arrays.asList("Perez", "Gomez", "Rodriguez", "Martinez", "Garcia", "Lopez");
     private static final List<String> NATIONALITIES = Arrays.asList("Colombiana", "Mexicana", "Argentina", "Chilena", "Peruana", "Venezolana");
 
-    public static List<Client> createClients(int numberOfClients) {
+    public static List<Client> createClients() {
+        int numberOfClients = 5;
+
         List<Client> clients = new ArrayList<>();
 
         for (int i = 0; i < numberOfClients; i++) {

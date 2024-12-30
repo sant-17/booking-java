@@ -33,6 +33,10 @@ public class DayTrip {
         this.bookings.add(booking);
     }
 
+    public void removeBooking(Booking booking) {
+        this.bookings.remove(booking);
+    }
+
     public Double getTotalPrice(Integer adults, Integer kids, LocalDate date) {
         int totalPercentage = calculateTotalPercentage(date);
 
