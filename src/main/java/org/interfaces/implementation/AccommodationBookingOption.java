@@ -13,9 +13,6 @@ import org.repositories.ClientRepository;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 
 @AllArgsConstructor
 public class AccommodationBookingOption implements IMenu {
@@ -32,10 +29,9 @@ public class AccommodationBookingOption implements IMenu {
 
         String citySelected = getCity(scanner);
 
-        List<Accommodation> accommodationsByCity = filterAccommodationsByCity(
-                accommodationRepository.getAccommodations(),
-                citySelected);
+        List<Accommodation> accommodationsByCity = accommodationRepository.getAccommodationsByCity(citySelected);
         if (accommodationNotFoundByCity(accommodationsByCity, citySelected)) return;
+
         showAccommodationsByCity(citySelected, accommodationsByCity);
 
         LocalDate checkIn = getCheckInDate(scanner);
@@ -43,10 +39,7 @@ public class AccommodationBookingOption implements IMenu {
 
         String accommodationType = getAccommodationType(scanner);
 
-        List<Accommodation> matchedAccommodations = filterAccommodationsByCityAndType(
-                accommodationRepository.getAccommodations(),
-                citySelected,
-                accommodationType);
+        List<Accommodation> matchedAccommodations = accommodationRepository.getAccommodationsByCityAndType(citySelected, accommodationType);
         if (accommodationsNotFound(matchedAccommodations)) return;
 
         Accommodation selectedAccommodation = selectAccommodation(scanner, matchedAccommodations);
@@ -153,18 +146,6 @@ public class AccommodationBookingOption implements IMenu {
         };
     }
 
-    private static List<Accommodation> filterAccommodationsByCity(List<Accommodation> accommodations, String city) {
-        return accommodations.stream()
-                .filter(accommodation -> compareIgnoringAccentsAndCase(accommodation.getCity(), city))
-                .collect(Collectors.toList());
-    }
-
-    private static List<Accommodation> filterAccommodationsByCityAndType(List<Accommodation> accommodations, String city, String type) {
-        return accommodations.stream()
-                .filter(accommodation -> compareIgnoringAccentsAndCase(accommodation.getCity(), city) && accommodation.getType().equals(type))
-                .collect(Collectors.toList());
-    }
-
     private static Accommodation selectAccommodation(Scanner scanner, List<Accommodation> accommodations) {
         System.out.println("\nOpciones disponibles:");
         for (int i = 0; i < accommodations.size(); i++) {
@@ -215,25 +196,21 @@ public class AccommodationBookingOption implements IMenu {
         System.out.print("- Día de nacimiento: ");
         additionalData.put("birthDay", scanner.nextInt());
 
-        LocalDate comparisonDateDayTripBooking = LocalDate.of(
+        LocalDate birthDate = LocalDate.of(
                 additionalData.get("birthYear"),
                 additionalData.get("birthMonth"),
                 additionalData.get("birthDay")
         );
 
-        Optional<Client> existingClient = clientRepository.getClients().stream()
-                .filter(client -> client.getEmail().equalsIgnoreCase(basicData.get("email")) &&
-                        client.getBirthDate().isEqual(comparisonDateDayTripBooking))
-                .findFirst();
-
-        return existingClient.orElseGet(() -> {
+        return clientRepository.findClientByEmailAndBirthDate(basicData.get("email"), birthDate).orElseGet(() -> {
             Client newClient = new Client(
                     basicData.get("fullName"),
                     basicData.get("email"),
                     basicData.get("nationality"),
                     basicData.get("phoneNumber"),
-                    comparisonDateDayTripBooking);
+                    birthDate);
             clientRepository.addClient(newClient);
+            System.out.println("Se han guardado sus datos para futuras reservas.");
             return newClient;
         });
     }

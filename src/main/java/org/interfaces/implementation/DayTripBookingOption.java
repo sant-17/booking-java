@@ -10,9 +10,6 @@ import org.repositories.DayTripRepository;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 
 @AllArgsConstructor
 public class DayTripBookingOption implements IMenu {
@@ -25,9 +22,11 @@ public class DayTripBookingOption implements IMenu {
     }
 
     private static void handleDayTripBooking(Scanner scanner) {
+        DayTripRepository dayTripRepository = DayTripRepository.getInstance();
+
         String citySelected = getCity(scanner);
 
-        List<DayTrip> dayTripsByCity = filterDayTripByCity(citySelected);
+        List<DayTrip> dayTripsByCity = dayTripRepository.findDayTripByCity(citySelected);
         if (dayTripsByCity.isEmpty()) {
             System.out.println("\nNo se encontraron alojamientos disponibles para la ciudad de " + citySelected.toUpperCase());
             return;
@@ -60,12 +59,6 @@ public class DayTripBookingOption implements IMenu {
         System.out.print(CityData.CITIES + ": ");
         scanner.nextLine();
         return scanner.nextLine();
-    }
-
-    private static List<DayTrip> filterDayTripByCity(String city) {
-        return DayTripRepository.getInstance().getDayTrips().stream()
-                .filter(dayTrip -> compareIgnoringAccentsAndCase(dayTrip.getCity(), city))
-                .collect(Collectors.toList());
     }
 
     private static DayTrip selectDayTrip(Scanner scanner, List<DayTrip> dayTrips) {
@@ -114,24 +107,19 @@ public class DayTripBookingOption implements IMenu {
         System.out.print("- Día de nacimiento: ");
         additionalData.put("birthDay", scanner.nextInt());
 
-        LocalDate comparisonDateDayTripBooking = LocalDate.of(
+        LocalDate birthDate = LocalDate.of(
                 additionalData.get("birthYear"),
                 additionalData.get("birthMonth"),
                 additionalData.get("birthDay")
         );
 
-        Optional<Client> existingClient = clientRepository.getClients().stream()
-                .filter(client -> client.getEmail().equalsIgnoreCase(basicData.get("email")) &&
-                        client.getBirthDate().isEqual(comparisonDateDayTripBooking))
-                .findFirst();
-
-        return existingClient.orElseGet(() -> {
+        return clientRepository.findClientByEmailAndBirthDate(basicData.get("email"), birthDate).orElseGet(() -> {
             Client newClient = new Client(
                     basicData.get("fullName"),
                     basicData.get("email"),
                     basicData.get("nationality"),
                     basicData.get("phoneNumber"),
-                    comparisonDateDayTripBooking);
+                    birthDate);
             clientRepository.addClient(newClient);
             System.out.println("Se han guardado sus datos para futuras reservas.");
             return newClient;

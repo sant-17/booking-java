@@ -88,7 +88,7 @@ public class Room {
             return "";
         }
 
-        return String.format("Debido a la fecha, el precio total ha %s un %d%% = $%.2f",
+        return String.format("Debido a la fecha, la tarifa tendrá un %s del %d%% = $%.2f",
                 getAdjustmentType(totalPercentage),
                 Math.abs(totalPercentage),
                 calculateAdjustmentAmount(totalPercentage, subtotal));
@@ -96,7 +96,7 @@ public class Room {
 
 
     private String getAdjustmentType(int totalPercentage) {
-        return totalPercentage > 0 ? "aumentado" : "recibido un descuento";
+        return totalPercentage > 0 ? "aumento" : "descuento";
     }
 
 

@@ -5,6 +5,9 @@ import org.models.DayTrip;
 import org.models.factories.DayTripFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.utils.StringUtility.compareIgnoringAccentsAndCase;
 
 public class DayTripRepository {
     private static DayTripRepository instance;
@@ -26,5 +29,11 @@ public class DayTripRepository {
 
     public void addDayTrip(DayTrip dayTrip) {
         dayTrips.add(dayTrip);
+    }
+
+    public List<DayTrip> findDayTripByCity(String city) {
+        return dayTrips.stream()
+                .filter(dayTrip -> compareIgnoringAccentsAndCase(dayTrip.getCity(), city))
+                .collect(Collectors.toList());
     }
 }

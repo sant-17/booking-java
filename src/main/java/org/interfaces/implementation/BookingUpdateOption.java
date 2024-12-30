@@ -25,9 +25,8 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
         scanner.nextLine();
 
         Client client = getClientInfo(scanner);
-        if (client == null) return null;
 
-        if (client.getBookings().isEmpty()) {
+        if (clientWithoutBookings(client)) {
             System.out.println("NO HA HECHO NINGUNA RESERVA");
         }
 
@@ -38,6 +37,10 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
         System.out.println(booking);
 
         return booking;
+    }
+
+    private static boolean clientWithoutBookings(Client client) {
+        return client.getBookings().isEmpty() || client == null;
     }
 
     private static Booking getBooking(Scanner scanner, Client client) {
