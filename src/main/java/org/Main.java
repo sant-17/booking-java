@@ -40,7 +40,7 @@ public class Main {
                     default -> System.out.println("OPCIÓN NO VÁLIDA");
                 }
             } catch (Exception e) {
-                System.out.println("HUBO UN ERROR, INTENTE NUEVAMENTE");
+                System.out.println("HUBO UN ERROR, INTENTE NUEVAMENTE: " + e.getMessage());
                 scanner.nextLine();
             }
         }
