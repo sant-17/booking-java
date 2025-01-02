@@ -1,4 +1,4 @@
-package org.interfaces.implementation;
+package org.services;
 
 import lombok.AllArgsConstructor;
 import org.interfaces.IModifyBookingMenu;
@@ -8,10 +8,8 @@ import org.models.Client;
 import org.models.DayTrip;
 import org.repositories.BookingRepository;
 
-import java.util.List;
-
 @AllArgsConstructor
-public class DeleteBookingOption implements IModifyBookingMenu {
+public class DeleteBookingService implements IModifyBookingMenu {
 
     @Override
     public void execute(Booking booking) {

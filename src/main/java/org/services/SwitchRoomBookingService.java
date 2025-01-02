@@ -1,4 +1,4 @@
-package org.interfaces.implementation;
+package org.services;
 
 import lombok.AllArgsConstructor;
 import org.interfaces.IModifyBookingMenu;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @AllArgsConstructor
-public class SwitchRoomBookingOption implements IModifyBookingMenu {
+public class SwitchRoomBookingService implements IModifyBookingMenu {
     private Scanner scanner;
 
     @Override

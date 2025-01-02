@@ -1,13 +1,13 @@
 package org.interfaces.proxys;
 
 import org.interfaces.IModifyBookingMenu;
-import org.interfaces.implementation.SwitchRoomBookingOption;
+import org.services.SwitchRoomBookingService;
 import org.models.Booking;
 
 import java.util.Scanner;
 
 public class SwitchRoomBookingProxy implements IModifyBookingMenu {
-    private SwitchRoomBookingOption option;
+    private SwitchRoomBookingService service;
     private Scanner scanner;
 
     public SwitchRoomBookingProxy(Scanner scanner) {
@@ -16,9 +16,12 @@ public class SwitchRoomBookingProxy implements IModifyBookingMenu {
 
     @Override
     public void execute(Booking booking) {
-        if (option == null) {
-            option = new SwitchRoomBookingOption(scanner);
+        if (service == null) {
+            service = new SwitchRoomBookingService(scanner);
         }
-        option.execute(booking);
+        if (booking == null) {
+            throw new RuntimeException("No hay reserva seleccionada.");
+        }
+        service.execute(booking);
     }
 }

@@ -2,18 +2,21 @@ package org.interfaces.proxys;
 
 import lombok.NoArgsConstructor;
 import org.interfaces.IModifyBookingMenu;
-import org.interfaces.implementation.DeleteBookingOption;
+import org.services.DeleteBookingService;
 import org.models.Booking;
 
 @NoArgsConstructor
 public class DeleteBookingProxy implements IModifyBookingMenu {
-    private DeleteBookingOption option;
+    private DeleteBookingService service;
 
     @Override
     public void execute(Booking booking) {
-        if (option == null) {
-            option = new DeleteBookingOption();
+        if (service == null) {
+            service = new DeleteBookingService();
         }
-        option.execute(booking);
+        if (booking == null) {
+            throw new RuntimeException("No hay reserva seleccionada.");
+        }
+        service.execute(booking);
     }
 }

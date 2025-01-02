@@ -1,4 +1,4 @@
-package org.interfaces.implementation;
+package org.services;
 
 import lombok.AllArgsConstructor;
 import org.models.*;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @AllArgsConstructor
-public class DayTripBookingOption implements IMenu {
+public class DayTripBookingService implements IMenu {
 
     private Scanner scanner;
 

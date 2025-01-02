@@ -1,12 +1,12 @@
 package org.interfaces.proxys;
 
 import org.interfaces.IMenu;
-import org.interfaces.implementation.AccommodationBookingOption;
+import org.services.AccommodationBookingService;
 
 import java.util.Scanner;
 
 public class AccommodationBookingProxy implements IMenu {
-    private AccommodationBookingOption option;
+    private AccommodationBookingService service;
     private Scanner scanner;
 
     public AccommodationBookingProxy(Scanner scanner) {
@@ -15,9 +15,9 @@ public class AccommodationBookingProxy implements IMenu {
 
     @Override
     public void execute() {
-        if (option == null) {
-            option = new AccommodationBookingOption(scanner);
+        if (service == null) {
+            service = new AccommodationBookingService(scanner);
         }
-        option.execute();
+        service.execute();
     }
 }

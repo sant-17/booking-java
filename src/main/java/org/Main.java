@@ -51,7 +51,8 @@ public class Main {
                                             IModifyBookingMenu deleteBookingProxy,
                                             Scanner scanner) {
         Booking clientBooking = bookingUpdateProxy.execute();
-        if (clientBooking == null) return;
+        if (clientBooking == null) throw new RuntimeException("No se ha seleccionado ninguna reserva.");
+
         int selectedOption = getSelectedOptionUpdate(scanner);
 
         switch (selectedOption) {

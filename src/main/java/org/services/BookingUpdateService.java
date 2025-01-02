@@ -1,4 +1,4 @@
-package org.interfaces.implementation;
+package org.services;
 
 import lombok.AllArgsConstructor;
 import org.models.Booking;
@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 @AllArgsConstructor
-public class BookingUpdateOption implements IBookingUpdateMenu {
+public class BookingUpdateService implements IBookingUpdateMenu {
     private Scanner scanner;
 
     @Override
@@ -44,7 +44,6 @@ public class BookingUpdateOption implements IBookingUpdateMenu {
             return client.getBookings().isEmpty();
         }
         throw new RuntimeException("Cliente nulo/no existe");
-
     }
 
     private static Booking getBooking(Scanner scanner, Client client) {

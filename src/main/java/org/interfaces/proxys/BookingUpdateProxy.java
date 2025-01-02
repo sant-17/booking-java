@@ -1,13 +1,13 @@
 package org.interfaces.proxys;
 
 import org.interfaces.IBookingUpdateMenu;
-import org.interfaces.implementation.BookingUpdateOption;
+import org.services.BookingUpdateService;
 import org.models.Booking;
 
 import java.util.Scanner;
 
 public class BookingUpdateProxy implements IBookingUpdateMenu {
-    private BookingUpdateOption option;
+    private BookingUpdateService service;
     private Scanner scanner;
 
     public BookingUpdateProxy(Scanner scanner) {
@@ -16,9 +16,9 @@ public class BookingUpdateProxy implements IBookingUpdateMenu {
 
     @Override
     public Booking execute() {
-        if (option == null) {
-            option = new BookingUpdateOption(scanner);
+        if (service == null) {
+            service = new BookingUpdateService(scanner);
         }
-        return option.execute();
+        return service.execute();
     }
 }
